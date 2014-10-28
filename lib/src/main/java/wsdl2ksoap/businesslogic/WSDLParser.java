@@ -21,22 +21,18 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 /**
- *
  * @author newky
  */
-public class WSDLParser
-{
-    public static boolean ProcessWSDL()
-    {
-        try
-            {
-            
+public class WSDLParser {
+    public static boolean ProcessWSDL() {
+        try {
+
 
             DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
             Document doc = docBuilder.parse(PropertyContainer.WSDLAddress);
 
-            doc.getDocumentElement ().normalize ();
+            doc.getDocumentElement().normalize();
 
             PropertyContainer.Namespace = doc.getDocumentElement().getAttribute("targetNamespace");
 
@@ -55,9 +51,8 @@ public class WSDLParser
             NodeList nodes = doc.getElementsByTagName("wsdl:service");
             Node serviceNode = nodes.item(0);
 
-            if(serviceNode.getNodeType() == Node.ELEMENT_NODE)
-            {
-                Element serviceElement = (Element)serviceNode;
+            if (serviceNode.getNodeType() == Node.ELEMENT_NODE) {
+                Element serviceElement = (Element) serviceNode;
 
                 //serviceNode
                 PropertyContainer.ServiceName = serviceElement.getAttribute("name");
@@ -69,15 +64,12 @@ public class WSDLParser
 
                 //System.out.println("Total no of bindings : " + bindings.getLength());
                 //get binding and then the Methods
-                for(int s=0; s<bindings.getLength() ; s++)
-                {
+                for (int s = 0; s < bindings.getLength(); s++) {
                     Node bindingNode = bindings.item(s);
-                    if(bindingNode.getNodeType() == Node.ELEMENT_NODE)
-                    {
-                        Element bindingElement = (Element)bindingNode;
+                    if (bindingNode.getNodeType() == Node.ELEMENT_NODE) {
+                        Element bindingElement = (Element) bindingNode;
 
-                        if (bindingElement.getAttribute("name").equals(PropertyContainer.GetSoapPortName()))
-                        {
+                        if (bindingElement.getAttribute("name").equals(PropertyContainer.GetSoapPortName())) {
                             String portTypeNS = bindingElement.getAttribute("type").replaceFirst("tns:", "");
 
                             //System.out.println("Type : " + portTypeNS);
@@ -92,64 +84,56 @@ public class WSDLParser
 
 
                             //Loop through Functions
-                            for(int op=0; op<operations.getLength() ; op++)
-                            {
-                                  Node operationNode = operations.item(op);
+                            for (int op = 0; op < operations.getLength(); op++) {
+                                Node operationNode = operations.item(op);
 
 
-                                 if(bindingNode.getNodeType() == Node.ELEMENT_NODE)
-                                 {
-                                     //get element
-                                     Element operationElement = (Element)operationNode;
+                                if (bindingNode.getNodeType() == Node.ELEMENT_NODE) {
+                                    //get element
+                                    Element operationElement = (Element) operationNode;
 
-                                     //create new instance
-                                     Function newFunc = new Function();
-                                     newFunc.Name = operationElement.getAttribute("name");
+                                    //create new instance
+                                    Function newFunc = new Function();
+                                    newFunc.Name = operationElement.getAttribute("name");
 
-                                     //get operation list and element
-                                     NodeList soapOpList = operationElement.getElementsByTagName("soap:operation");
-                                     Element soapOpElement = (Element)soapOpList.item(0);
+                                    //get operation list and element
+                                    NodeList soapOpList = operationElement.getElementsByTagName("soap:operation");
+                                    Element soapOpElement = (Element) soapOpList.item(0);
 
-                                     newFunc.SoapAction = soapOpElement.getAttribute("soapAction");
+                                    newFunc.SoapAction = soapOpElement.getAttribute("soapAction");
 
-                                     //get port types
-                                     NodeList portTypes = doc.getElementsByTagName("wsdl:portType");
+                                    //get port types
+                                    NodeList portTypes = doc.getElementsByTagName("wsdl:portType");
 
 
-                                     //loop through elements
-                                    for(int pt=0; pt<portTypes.getLength() ; pt++)
-                                    {
+                                    //loop through elements
+                                    for (int pt = 0; pt < portTypes.getLength(); pt++) {
                                         Node portTypeNode = portTypes.item(pt);
 
-                                        if(portTypeNode.getNodeType() == Node.ELEMENT_NODE)
-                                        {
-                                            Element portTypeElement = (Element)portTypeNode;
+                                        if (portTypeNode.getNodeType() == Node.ELEMENT_NODE) {
+                                            Element portTypeElement = (Element) portTypeNode;
 
                                             //check to see if it is the same as the current operation
-                                            if (portTypeElement.getAttribute("name").equals(portTypeNS))
-                                            {
+                                            if (portTypeElement.getAttribute("name").equals(portTypeNS)) {
                                                 //get the operations for this portType
                                                 NodeList operationList = portTypeElement.getElementsByTagName("wsdl:operation");
 
                                                 //loop through operation list
-                                                for(int ol=0; ol<operationList.getLength() ; ol++)
-                                                {
+                                                for (int ol = 0; ol < operationList.getLength(); ol++) {
                                                     Node operationListNode = operationList.item(ol);
 
-                                                    if(operationListNode.getNodeType() == Node.ELEMENT_NODE)
-                                                    {
-                                                        Element operationListElement = (Element)operationListNode;
+                                                    if (operationListNode.getNodeType() == Node.ELEMENT_NODE) {
+                                                        Element operationListElement = (Element) operationListNode;
 
                                                         //see if the element matches the function anem
-                                                        if (operationListElement.getAttribute("name").equals(newFunc.Name))
-                                                        {
+                                                        if (operationListElement.getAttribute("name").equals(newFunc.Name)) {
                                                             //is this function - get input parameter type
                                                             NodeList inputList = operationListElement.getElementsByTagName("wsdl:input");
-                                                            String inputMessage = ((Element)inputList.item(0)).getAttribute("message").replaceFirst("tns:", "");
+                                                            String inputMessage = ((Element) inputList.item(0)).getAttribute("message").replaceFirst("tns:", "");
 
                                                             //is this function - get return type
                                                             NodeList outputList = operationListElement.getElementsByTagName("wsdl:output");
-                                                            String outputMessage = ((Element)outputList.item(0)).getAttribute("message").replaceFirst("tns:", "");
+                                                            String outputMessage = ((Element) outputList.item(0)).getAttribute("message").replaceFirst("tns:", "");
 
 //                                                            
 
@@ -157,38 +141,32 @@ public class WSDLParser
                                                             //get port types
                                                             NodeList messages = doc.getElementsByTagName("wsdl:message");
 
-                                                            for(int ml=0; ml<messages.getLength() ; ml++)
-                                                            {
+                                                            for (int ml = 0; ml < messages.getLength(); ml++) {
                                                                 Node messageNode = messages.item(ml);
 
-                                                                if(messageNode.getNodeType() == Node.ELEMENT_NODE)
-                                                                {
+                                                                if (messageNode.getNodeType() == Node.ELEMENT_NODE) {
                                                                     //convert to element
-                                                                    Element messageElement = (Element)messageNode;
+                                                                    Element messageElement = (Element) messageNode;
 
                                                                     //compare against inputMessage name
-                                                                    if (messageElement.getAttribute("name").equals(inputMessage))
-                                                                    {
+                                                                    if (messageElement.getAttribute("name").equals(inputMessage)) {
 
-                                                                        newFunc.InputType = ((Element)messageElement.getElementsByTagName("wsdl:part").item(0)).getAttribute("element").replaceFirst("tns:", "");
+                                                                        newFunc.InputType = ((Element) messageElement.getElementsByTagName("wsdl:part").item(0)).getAttribute("element").replaceFirst("tns:", "");
 
                                                                         //System.out.println("In " + newFunc.InputType);
 
-                                                                    }
-                                                                    else //compare against inputMessage name
-                                                                    if (messageElement.getAttribute("name").equals(outputMessage))
-                                                                    {
-                                                                        //get response type
-                                                                        //get input param type
-                                                                        newFunc.OutputType = ((Element)messageElement.getElementsByTagName("wsdl:part").item(0)).getAttribute("element").replaceFirst("tns:", "");
+                                                                    } else //compare against inputMessage name
+                                                                        if (messageElement.getAttribute("name").equals(outputMessage)) {
+                                                                            //get response type
+                                                                            //get input param type
+                                                                            newFunc.OutputType = ((Element) messageElement.getElementsByTagName("wsdl:part").item(0)).getAttribute("element").replaceFirst("tns:", "");
 
-                                                                        
-                                                                    }
+
+                                                                        }
 
                                                                 }
 
                                                             }
-
 
 
                                                         }
@@ -199,12 +177,11 @@ public class WSDLParser
 
                                     }
 
-                                     //add newFunc to functions array
-                                     PropertyContainer.Functions[op] = newFunc;
+                                    //add newFunc to functions array
+                                    PropertyContainer.Functions[op] = newFunc;
 
-                                 }
+                                }
                             }
-
 
 
                         }
@@ -216,22 +193,20 @@ public class WSDLParser
 
             }
 
-            
+
             // now process the datatypes and classes
             NodeList typenodes = doc.getElementsByTagName("wsdl:types");
             Node typesNode = typenodes.item(0);
 
-            if(serviceNode.getNodeType() == Node.ELEMENT_NODE)
-            {
-                Element typesElement = (Element)typesNode;
+            if (serviceNode.getNodeType() == Node.ELEMENT_NODE) {
+                Element typesElement = (Element) typesNode;
 
-                 //now get schema element
+                //now get schema element
                 Node typeschemaNode = typesElement.getElementsByTagName("s:schema").item(0);
 
                 //serviceElement.getAttribute("name");
-                if(typeschemaNode.getNodeType() == Node.ELEMENT_NODE)
-                {
-                    Element typeschemaElement = (Element)typeschemaNode;
+                if (typeschemaNode.getNodeType() == Node.ELEMENT_NODE) {
+                    Element typeschemaElement = (Element) typeschemaNode;
 
                     //get elements
                     NodeList elementNodes = typeschemaElement.getElementsByTagName("s:element");
@@ -246,89 +221,74 @@ public class WSDLParser
 
 
                     //iterate through s:element objects
-                    for (int elLoop = 0;elLoop < elementNodes.getLength();elLoop++)
-                    {
+                    for (int elLoop = 0; elLoop < elementNodes.getLength(); elLoop++) {
                         Node elementNode = elementNodes.item(elLoop);
 
-                        if(elementNode.getNodeType() == Node.ELEMENT_NODE)
-                        {
-                            Element elementElement = (Element)elementNode;
+                        if (elementNode.getNodeType() == Node.ELEMENT_NODE) {
+                            Element elementElement = (Element) elementNode;
 
                             //get header elements from list - as the list contains all s:elements from the schema nodes
 
 
-
-                            if (elementNode.hasChildNodes())
-                            {
+                            if (elementNode.hasChildNodes()) {
                                 //check to see not has name
 
-                                
-                                    SoapClass newClass = new SoapClass(elementElement.getAttribute("name"));
 
-                                    //set classtype to unknown
-                                    newClass.Type = ClassType.Unknown;
-                                    //now get properties from class
-                                    //get elements
-                                    NodeList propertyNodes = elementElement.getElementsByTagName("s:element");
+                                SoapClass newClass = new SoapClass(elementElement.getAttribute("name"));
 
-                                    //iterate through properties
-                                    for (int propLoop = 0; propLoop < propertyNodes.getLength();propLoop++)
-                                    {
-                                        Node propertyNode = propertyNodes.item(propLoop);
+                                //set classtype to unknown
+                                newClass.Type = ClassType.Unknown;
+                                //now get properties from class
+                                //get elements
+                                NodeList propertyNodes = elementElement.getElementsByTagName("s:element");
 
-                                        if(propertyNode.getNodeType() == Node.ELEMENT_NODE)
-                                        {
-                                            Element propertyElement = (Element)propertyNode;
+                                //iterate through properties
+                                for (int propLoop = 0; propLoop < propertyNodes.getLength(); propLoop++) {
+                                    Node propertyNode = propertyNodes.item(propLoop);
 
-                                            //create new property class
-                                            SoapClassProperty newProp = new SoapClassProperty(propertyElement.getAttribute("name"));
-                                            newProp.SetPropertyClassType(propertyElement.getAttribute("type"));
+                                    if (propertyNode.getNodeType() == Node.ELEMENT_NODE) {
+                                        Element propertyElement = (Element) propertyNode;
 
-                                            //check to see if is array of objects
-                                            if (propertyElement.getAttribute("maxOccurs").equals("unbounded"))
-                                            {
-                                                //yes is array
-                                                newProp.SetIsArray(true);
-                                                
-                                            }
-                                            
-                                            newClass.Properties.add(newProp);
+                                        //create new property class
+                                        SoapClassProperty newProp = new SoapClassProperty(propertyElement.getAttribute("name"));
+                                        newProp.SetPropertyClassType(propertyElement.getAttribute("type"));
+
+                                        //check to see if is array of objects
+                                        if (propertyElement.getAttribute("maxOccurs").equals("unbounded")) {
+                                            //yes is array
+                                            newProp.SetIsArray(true);
 
                                         }
 
+                                        newClass.Properties.add(newProp);
+
                                     }
 
+                                }
 
 
-                                    System.out.println("Element Class: " + newClass.Name + " Properties: " + newClass.Properties.size());
+                                System.out.println("Element Class: " + newClass.Name + " Properties: " + newClass.Properties.size());
 
-                                    
 
-                                    PropertyContainer.Classes.add(newClass);
-                                    
-                                   
-                                
-                                
+                                PropertyContainer.Classes.add(newClass);
+
+
                             }
                         }
 
                     }
 
                     //iterate through s:comlextypes objects
-                    for (int ctLoop = 0;ctLoop < complexTypesNodes.getLength();ctLoop++)
-                    {
+                    for (int ctLoop = 0; ctLoop < complexTypesNodes.getLength(); ctLoop++) {
                         Node ctypeNode = complexTypesNodes.item(ctLoop);
 
-                        if(ctypeNode.getNodeType() == Node.ELEMENT_NODE)
-                        {
-                            Element ctypeElement = (Element)ctypeNode;
+                        if (ctypeNode.getNodeType() == Node.ELEMENT_NODE) {
+                            Element ctypeElement = (Element) ctypeNode;
 
                             //get header elements from list - as the list contains all s:elements from the schema nodes
-                            if (ctypeNode.hasChildNodes())
-                            {
+                            if (ctypeNode.hasChildNodes()) {
                                 //s:elements show up for some reason but have no name
-                                if (!ctypeElement.getAttribute("name").isEmpty())
-                                {
+                                if (!ctypeElement.getAttribute("name").isEmpty()) {
                                     SoapClass newClass = new SoapClass(ctypeElement.getAttribute("name"));
 
                                     //set class type to complex type
@@ -339,33 +299,29 @@ public class WSDLParser
                                     NodeList spBaseNode = ctypeElement.getElementsByTagName("s:extension");
                                     //Node ctNode = spBaseNode.item(1);
 
-                                    if (spBaseNode.getLength() != 0)
-                                    {
-                                        
+                                    if (spBaseNode.getLength() != 0) {
+
                                         Node sbBaseNode = spBaseNode.item(0);
 
-                                        if(sbBaseNode.getNodeType() == Node.ELEMENT_NODE)
-                                        {
-                                            Element sbBaseElement = (Element)sbBaseNode;
-                                            
+                                        if (sbBaseNode.getNodeType() == Node.ELEMENT_NODE) {
+                                            Element sbBaseElement = (Element) sbBaseNode;
+
                                             newClass.SuperClassType = sbBaseElement.getAttribute("base").replaceAll("tns:", "");
-  
+
                                         }
                                     }
 
                                     System.out.println("SuperClass: " + newClass.SuperClassType);
-                                    
-                                     //get elements
+
+                                    //get elements
                                     NodeList propertyNodes = ctypeElement.getElementsByTagName("s:element");
 
                                     //iterate through properties
-                                    for (int propLoop = 0; propLoop < propertyNodes.getLength();propLoop++)
-                                    {
+                                    for (int propLoop = 0; propLoop < propertyNodes.getLength(); propLoop++) {
                                         Node propertyNode = propertyNodes.item(propLoop);
 
-                                        if(propertyNode.getNodeType() == Node.ELEMENT_NODE)
-                                        {
-                                            Element propertyElement = (Element)propertyNode;
+                                        if (propertyNode.getNodeType() == Node.ELEMENT_NODE) {
+                                            Element propertyElement = (Element) propertyNode;
 
                                             //create new property class
                                             SoapClassProperty newProp = new SoapClassProperty(propertyElement.getAttribute("name"));
@@ -373,8 +329,7 @@ public class WSDLParser
 
 
                                             //check to see if is array of objects
-                                            if (propertyElement.getAttribute("maxOccurs").equals("unbounded"))
-                                            {
+                                            if (propertyElement.getAttribute("maxOccurs").equals("unbounded")) {
                                                 //yes is array
                                                 newProp.SetIsArray(true);
                                                 newClass.ElementType = newProp.getPropertyClassType();
@@ -409,23 +364,19 @@ public class WSDLParser
             }
 
 
-            
+        } catch (SAXParseException err) {
+            System.out.println("** Parsing error" + ", line "
+                    + err.getLineNumber() + ", uri " + err.getSystemId());
+            System.out.println(" " + err.getMessage());
 
+        } catch (SAXException e) {
+            Exception x = e.getException();
+            ((x == null) ? e : x).printStackTrace();
 
-            }
-            catch (SAXParseException err) {
-        System.out.println ("** Parsing error" + ", line "
-             + err.getLineNumber () + ", uri " + err.getSystemId ());
-        System.out.println(" " + err.getMessage ());
-
-        }catch (SAXException e) {
-        Exception x = e.getException ();
-        ((x == null) ? e : x).printStackTrace ();
-
-        }catch (Throwable t) {
-        t.printStackTrace ();
+        } catch (Throwable t) {
+            t.printStackTrace();
         }
 
-       return true;
+        return true;
     }
 }

@@ -15,103 +15,97 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
  * @author newky
  */
-public class ClassProcessor
-{
-    static public void CreateServiceClass(String packagename) throws Exception
-    {
-            //retrieve class
-            InputStream file = ClassProcessor.class.getResourceAsStream("ClassTemplate.txt");
+public class ClassProcessor {
+    static public void CreateServiceClass(String packagename) throws Exception {
+        //retrieve class
+        InputStream file = ClassProcessor.class.getResourceAsStream("ClassTemplate.txt");
 
 
-            if (file != null) {
-                System.out.println("Woohoo");
+        if (file != null) {
+            System.out.println("Woohoo");
 
-                String classText = FileHelper.getContents(file);
+            String classText = FileHelper.getContents(file);
 
-                file.close();
+            file.close();
 
-                //find packname string and replace it
-                classText = classText.replaceAll("%%PACKAGENAME%%", packagename);
+            //find packname string and replace it
+            classText = classText.replaceAll("%%PACKAGENAME%%", packagename);
 
-                //now find classname and replace that with the service name add soap to name for clarity
-                classText = classText.replaceAll("%%CLASSNAME%%", PropertyContainer.ServiceName + "Soap");
+            //now find classname and replace that with the service name add soap to name for clarity
+            classText = classText.replaceAll("%%CLASSNAME%%", PropertyContainer.ServiceName + "Soap");
 
-                //load service imports
-                InputStream impFile = ClassProcessor.class.getResourceAsStream("ServiceImportsTemplate.txt");
+            //load service imports
+            InputStream impFile = ClassProcessor.class.getResourceAsStream("ServiceImportsTemplate.txt");
 
-                if (impFile != null) {
-                    //replace imports place holder
-                    classText = classText.replace("%%IMPORTS%%", FileHelper.getContents(impFile));
-                    impFile.close();
-
-                } else {
-                    throw new Exception("unable loads methods template");
-                }
-
-
-
-
-                InputStream methFile = ClassProcessor.class.getResourceAsStream("MethodTemplate.txt");
-                String blankfuncText = FileHelper.getContents(methFile);
-
-
-                String methText = "";
-
-                if (methFile != null) {
-                    methFile.close();
-
-                    // add methods
-                    for (int methLoop = 0; methLoop < PropertyContainer.Functions.length; methLoop++) {
-                        //get current Function
-                        Function curFunc = PropertyContainer.Functions[methLoop];
-
-                        String funcText = blankfuncText;
-
-                        //replace method name
-                        funcText = funcText.replaceAll("%%METHODNAME%%", curFunc.Name);
-
-                        //replace input param type
-                        funcText = funcText.replaceAll("%%INPUT%%", curFunc.InputType);
-
-                        //replace return type
-                        funcText = funcText.replaceAll("%%OUTPUT%%", curFunc.OutputType);
-
-                        methText = methText + funcText + "\n";
-
-                    }
-
-                    //replace Methods place holder with methText
-
-                    classText = classText.replace("%%METHODS%%", methText);
-
-
-                } else {
-                    throw new Exception("unable loads methods template");
-                }
-
-
-                //Get full path
-                String filePath = FileHelper.GetOutputFolderPath() + "/" + PropertyContainer.ServiceName + "Soap" + ".java";
-
-                //write to file
-                if (!FileHelper.WriteClassTextToFile(filePath, classText)) {
-                    throw new Exception("unable to create service file");
-                }
+            if (impFile != null) {
+                //replace imports place holder
+                classText = classText.replace("%%IMPORTS%%", FileHelper.getContents(impFile));
+                impFile.close();
 
             } else {
-                throw new Exception("service template file not found");
+                throw new Exception("unable loads methods template");
             }
-        
+
+
+            InputStream methFile = ClassProcessor.class.getResourceAsStream("MethodTemplate.txt");
+            String blankfuncText = FileHelper.getContents(methFile);
+
+
+            String methText = "";
+
+            if (methFile != null) {
+                methFile.close();
+
+                // add methods
+                for (int methLoop = 0; methLoop < PropertyContainer.Functions.length; methLoop++) {
+                    //get current Function
+                    Function curFunc = PropertyContainer.Functions[methLoop];
+
+                    String funcText = blankfuncText;
+
+                    //replace method name
+                    funcText = funcText.replaceAll("%%METHODNAME%%", curFunc.Name);
+
+                    //replace input param type
+                    funcText = funcText.replaceAll("%%INPUT%%", curFunc.InputType);
+
+                    //replace return type
+                    funcText = funcText.replaceAll("%%OUTPUT%%", curFunc.OutputType);
+
+                    methText = methText + funcText + "\n";
+
+                }
+
+                //replace Methods place holder with methText
+
+                classText = classText.replace("%%METHODS%%", methText);
+
+
+            } else {
+                throw new Exception("unable loads methods template");
+            }
+
+
+            //Get full path
+            String filePath = FileHelper.GetOutputFolderPath() + "/" + PropertyContainer.ServiceName + "Soap" + ".java";
+
+            //write to file
+            if (!FileHelper.WriteClassTextToFile(filePath, classText)) {
+                throw new Exception("unable to create service file");
+            }
+
+        } else {
+            throw new Exception("service template file not found");
+        }
+
     }
 
     /*
      * Create and modifies the BaseObject class
      */
-    public static void CreateBaseObjectFile(String packagename) throws Exception
-    {
+    public static void CreateBaseObjectFile(String packagename) throws Exception {
         InputStream file = ClassProcessor.class.getResourceAsStream("BaseObject.txt");
 
 
@@ -129,20 +123,17 @@ public class ClassProcessor
             //now save to folder
             String filePath = FileHelper.GetOutputFolderPath() + "/BaseObject.java";
             FileHelper.WriteClassTextToFile(filePath, classText);
-        }
-        else
-        {
-         throw new Exception("could not locatie BaseObject template");
+        } else {
+            throw new Exception("could not locatie BaseObject template");
         }
 
 
     }
 
-     /*
-     * Create and modifies the BaseObject class
-     */
-    public static void CreateLiteralVectorArrayFile(String packagename) throws Exception
-    {
+    /*
+    * Create and modifies the BaseObject class
+    */
+    public static void CreateLiteralVectorArrayFile(String packagename) throws Exception {
         InputStream file = ClassProcessor.class.getResourceAsStream("LiteralArrayVector.txt");
 
 
@@ -157,34 +148,28 @@ public class ClassProcessor
             //now save to folder
             String filePath = FileHelper.GetOutputFolderPath() + "/LiteralArrayVector.java";
             FileHelper.WriteClassTextToFile(filePath, classText);
-        }
-        else
-        {
-         throw new Exception("could not locatie LiteralArrayVector template");
+        } else {
+            throw new Exception("could not locatie LiteralArrayVector template");
         }
 
 
     }
 
-    public static void CreateClasess(String packagename) throws Exception
-    {
+    public static void CreateClasess(String packagename) throws Exception {
         //split classes into Unknowns and Complextypes
 
         //create complex types
         InputStream file = ClassProcessor.class.getResourceAsStream("SoapComplexTypeClassTemplate.txt");
 
 
-        if (file != null)
-        {
+        if (file != null) {
             String blankText = FileHelper.getContents(file);
             file.close();
-            
-            //loop through class and sort into types
-            for (SoapClass spClass : PropertyContainer.ComplexTypes)
-            {
 
-                if (spClass.isArray == true)
-                {
+            //loop through class and sort into types
+            for (SoapClass spClass : PropertyContainer.ComplexTypes) {
+
+                if (spClass.isArray == true) {
                     InputStream litFile = ClassProcessor.class.getResourceAsStream("ArrayObjectTemplate.txt");
 
 
@@ -205,14 +190,10 @@ public class ClassProcessor
                         //now save to folder
                         String filePath = FileHelper.GetOutputFolderPath() + "/" + spClass.Name + ".java";
                         FileHelper.WriteClassTextToFile(filePath, classText);
+                    } else {
+                        throw new Exception("could not locate Array Object Template");
                     }
-                    else
-                    {
-                     throw new Exception("could not locate Array Object Template");
-                    }
-                }
-                else
-                {
+                } else {
                     String classText = blankText;
 
                     //replace package place holder
@@ -221,7 +202,7 @@ public class ClassProcessor
                     //now find classname and replace that with the class name
                     classText = classText.replaceAll("%%CLASSNAME%%", spClass.Name);
 
-                     //set superclas
+                    //set superclas
                     //classText = classText.replaceAll("%%SUPERCLASS%%",spClass.SuperClassType);
 
                     //build properties insert
@@ -234,64 +215,56 @@ public class ClassProcessor
 
 
                     //need to build up properties from base class if not soapobject
-                    List<SoapClassProperty> propertyArray =  new ArrayList<SoapClassProperty>();
+                    List<SoapClassProperty> propertyArray = new ArrayList<SoapClassProperty>();
 
 
-                    if (!spClass.SuperClassType.equals("BaseObject"))
-                    {
-                         //if base object is not default load properties from superclass first then
+                    if (!spClass.SuperClassType.equals("BaseObject")) {
+                        //if base object is not default load properties from superclass first then
 
                         //find the super class
                         SoapClass superClass = PropertyContainer.GetClassWithName(spClass.SuperClassType);
 
-                        if (superClass != null)
-                        {
+                        if (superClass != null) {
                             propertyArray.addAll(superClass.Properties);
                         }
                     }
-                    
+
                     //now load the properties from this class
                     propertyArray.addAll(spClass.Properties);
 
                     //set property count
                     classText = classText.replaceAll("%%PROPCOUNT%%", String.format("%d", propertyArray.size()));
 
-                    for (SoapClassProperty prop : propertyArray)
-                    {
+                    for (SoapClassProperty prop : propertyArray) {
 
-                        if (!prop.getIsArray())
-                        {
-                            propText += String.format("     public %s %s;", prop.getPropertyClassType(),prop.getPropertyName()) + "\n";
-                        }
-                        else
-                        {
-                             propText += String.format("     //array \n");
-                             propText += String.format("     public %s %s;", prop.getPropertyClassType(),prop.getPropertyName()) + "\n";
+                        if (!prop.getIsArray()) {
+                            propText += String.format("     public %s %s;", prop.getPropertyClassType(), prop.getPropertyName()) + "\n";
+                        } else {
+                            propText += String.format("     //array \n");
+                            propText += String.format("     public %s %s;", prop.getPropertyClassType(), prop.getPropertyName()) + "\n";
                         }
 
                         //prop case text
                         getPropText += String.format("           case %d: \n", caseCount);
-                        getPropText += String.format("                return %s; \n",prop.getPropertyName());
+                        getPropText += String.format("                return %s; \n", prop.getPropertyName());
 
                         //prop info text
                         getPropInfoText += String.format("           case %d: \n", caseCount);
-                        getPropInfoText += String.format("                info.name = \"%s\"; \n",prop.getPropertyName());
-                        getPropInfoText += String.format("                info.type = %s; \n",getClassTypeRetrievalString(prop.getPropertyName(),prop.getPropertyClassType()));
-                        getPropInfoText += String.format("                             break; \n","");
+                        getPropInfoText += String.format("                info.name = \"%s\"; \n", prop.getPropertyName());
+                        getPropInfoText += String.format("                info.type = %s; \n", getClassTypeRetrievalString(prop.getPropertyName(), prop.getPropertyClassType()));
+                        getPropInfoText += String.format("                             break; \n", "");
 
                         //set prop text
                         setPropText += String.format("           case %d: \n", caseCount);
-                        setPropText += String.format("                %s = %s; \n",prop.getPropertyName(),getConvertorForType(prop.getPropertyClassType()));
-                        setPropText += String.format("                  break; \n","");
+                        setPropText += String.format("                %s = %s; \n", prop.getPropertyName(), getConvertorForType(prop.getPropertyClassType()));
+                        setPropText += String.format("                  break; \n", "");
 
 
-
-                        if (prop.getIsComplexType())
-                        {
+                        if (prop.getIsComplexType()) {
 
                             //get the class for this complex type and then check to see if its an
 
-                            regTypes +=  String.format("           new %s().register(envelope); \n",prop.getPropertyClassType());
+                            regTypes += String.format("           new %s().register(envelope); \n", prop.getPropertyClassType());
                         }
 
                         caseCount++;
@@ -300,7 +273,6 @@ public class ClassProcessor
 
                     //set property count
                     classText = classText.replaceAll("%%PROPERTIES%%", propText);
-
 
 
                     //set getProperty text
@@ -325,58 +297,42 @@ public class ClassProcessor
 
     }
 
-    private static String getConvertorForType(String propType)
-    {
-        if (propType.equals("boolean"))
-        {
+    private static String getConvertorForType(String propType) {
+        if (propType.equals("boolean")) {
             return String.format("Boolean.getBoolean(value.toString())", propType);
-        }
-        else if (propType.equals("int"))
-        {
+        } else if (propType.equals("int")) {
             return String.format("Integer.parseInt(value.toString())", propType);
-        }
-        else
-        {
+        } else {
             return String.format("(%s)value", propType);
         }
         //return "value";
     }
 
-    private static String getClassTypeRetrievalString(String propName, String propType)
-    {
-       if (propType.equals("boolean"))
-        {
+    private static String getClassTypeRetrievalString(String propName, String propType) {
+        if (propType.equals("boolean")) {
             return String.format("PropertyInfo.BOOLEAN_CLASS", propType);
-        }
-        else if (propType.equals("int"))
-        {
+        } else if (propType.equals("int")) {
             return String.format("PropertyInfo.INTEGER_CLASS", propType);
-        }
-        else
-        {
-            return String.format("new %s().getClass()",propType);
+        } else {
+            return String.format("new %s().getClass()", propType);
         }
     }
-    public static void CreateFunctionClasses(String packageName) throws Exception
-    {
+
+    public static void CreateFunctionClasses(String packageName) throws Exception {
         //work throug functions and
 
-        for (Function fn : PropertyContainer.Functions)
-        {
+        for (Function fn : PropertyContainer.Functions) {
             //for each function get the parameter class and the return type and create the classes
 
             SoapClass paramClass = PropertyContainer.GetClassWithName(fn.InputType);
             SoapClass returnClass = PropertyContainer.GetClassWithName(fn.OutputType);
 
-            
 
-            if (paramClass != null)
-            {
+            if (paramClass != null) {
                 InputStream file = ClassProcessor.class.getResourceAsStream("ParameterClassTemplate.txt");
-                
+
                 //set up paramClass
-                if (file != null )
-                {
+                if (file != null) {
                     String classText = FileHelper.getContents(file);
 
                     file.close();
@@ -401,13 +357,11 @@ public class ClassProcessor
                     String soapPropText = "";
 
 
-                    for (SoapClassProperty prop : paramClass.Properties)
-                    {
+                    for (SoapClassProperty prop : paramClass.Properties) {
 
-                        propText += String.format("     public %s %s;", prop.getPropertyClassType(),prop.getPropertyName()) + "\n";
+                        propText += String.format("     public %s %s;", prop.getPropertyClassType(), prop.getPropertyName()) + "\n";
 
-                        soapPropText += String.format("     request.addProperty(\"%s\", %s);", prop.getPropertyName(),prop.getPropertyName()) + "\n";
-
+                        soapPropText += String.format("     request.addProperty(\"%s\", %s);", prop.getPropertyName(), prop.getPropertyName()) + "\n";
 
 
                     }
@@ -423,29 +377,22 @@ public class ClassProcessor
                     String filePath = FileHelper.GetOutputFolderPath() + "/" + paramClass.Name + ".java";
 
                     //write to file
-                    if (!FileHelper.WriteClassTextToFile(filePath, classText))
-                    {
+                    if (!FileHelper.WriteClassTextToFile(filePath, classText)) {
                         throw new Exception("unable to create parameter class file");
                     }
+                } else {
+                    throw new Exception("could not locatie Parameter Class template");
                 }
-                else
-                {
-                 throw new Exception("could not locatie Parameter Class template");
-                }
-            }
-            else
-            {
+            } else {
                 throw new Exception("parameter class not found");
             }
 
             //now do the Return type class
-            if (returnClass != null)
-            {
+            if (returnClass != null) {
                 InputStream file = ClassProcessor.class.getResourceAsStream("ResponseTemplate.txt");
 
                 //set up paramClass
-                if (file != null )
-                {
+                if (file != null) {
                     String classText = FileHelper.getContents(file);
 
                     file.close();
@@ -460,25 +407,22 @@ public class ClassProcessor
                     SoapClassProperty prop = returnClass.Properties.get(0);
 
                     //now replace Prop type and name place holders
-                    if (prop.getIsComplexType())
-                    {
+                    if (prop.getIsComplexType()) {
                         //insert register text to register as seiraliable object
                         classText = classText.replaceAll("%%REGISTERTYPES%%", "new %%RESULTPROPTYPE%%().register(envelope);");
-                    }
-                    else
-                    {
+                    } else {
                         //remove placeholder
                         classText = classText.replaceAll("%%REGISTERTYPES%%", "");
                     }
 
 
                     //set replace the getproperty placeholder
-                    classText = classText.replaceAll("%%GETPROPINFO%%",getClassTypeRetrievalString(prop.getPropertyName(),prop.getPropertyClassType()));
+                    classText = classText.replaceAll("%%GETPROPINFO%%", getClassTypeRetrievalString(prop.getPropertyName(), prop.getPropertyClassType()));
 
                     //replace the setproperty place holder
-                    classText = classText.replaceAll("%%SETPROP%%",getConvertorForType(prop.getPropertyClassType()));
+                    classText = classText.replaceAll("%%SETPROP%%", getConvertorForType(prop.getPropertyClassType()));
 
-                    
+
                     //now find classname and replace that with the class name
                     classText = classText.replaceAll("%%RESULTPROPNAME%%", prop.getPropertyName());
 
@@ -491,19 +435,14 @@ public class ClassProcessor
                     String filePath = FileHelper.GetOutputFolderPath() + "/" + returnClass.Name + ".java";
 
                     //write to file
-                    if (!FileHelper.WriteClassTextToFile(filePath, classText))
-                    {
+                    if (!FileHelper.WriteClassTextToFile(filePath, classText)) {
                         throw new Exception("unable to create return class file");
                     }
-                }
-                else
-                {
+                } else {
                     throw new Exception("could not locatie Return Class template");
                 }
 
-            }
-            else
-            {
+            } else {
                 throw new Exception("return class not found");
             }
 

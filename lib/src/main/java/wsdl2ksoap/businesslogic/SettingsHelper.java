@@ -8,15 +8,13 @@ package wsdl2ksoap.businesslogic;
 import java.util.prefs.Preferences;
 
 /**
- *
  * @author newky
  */
-public class SettingsHelper
-{
+public class SettingsHelper {
     public static String Url;
     public static String OutputFolder;
     public static String Packagename;
-    
+
     final private static String SettingsKeyUrl = "Url";
     final private static String SettingsKeyOutputFolder = "OutFolder";
     final private static String SettingsKeyPackagename = "Package";
@@ -26,19 +24,15 @@ public class SettingsHelper
      * loads saved settings
      *
      */
-    public static void LoadSettings()
-    {
+    public static void LoadSettings() {
         Preferences prefs = Preferences.userNodeForPackage(SettingsHelper.class);
 
-        try
-        {
+        try {
             Url = prefs.get(SettingsKeyUrl, "");
             OutputFolder = prefs.get(SettingsKeyOutputFolder, "");
             Packagename = prefs.get(SettingsKeyPackagename, "");
 
-        }
-        catch (Exception ex)
-        {
+        } catch (Exception ex) {
 
         }
 
@@ -47,8 +41,7 @@ public class SettingsHelper
     /*
      * Saves settings to prefernce store
      */
-    public static void SaveSettings()
-    {
+    public static void SaveSettings() {
         Preferences prefs = Preferences.userNodeForPackage(SettingsHelper.class);
 
         prefs.put(SettingsKeyUrl, Url);

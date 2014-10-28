@@ -6,11 +6,9 @@
 package wsdl2ksoap.datatypes;
 
 /**
- *
  * @author newky
  */
-public class Function
-{
+public class Function {
     public String Name;
     public String SoapAction;
     public String InputType;

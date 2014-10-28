@@ -9,12 +9,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
  * @author newky
  */
-public class SoapClass
-{
-    public enum ClassType { Parameter, Response, ComplexType, Unknown};
+public class SoapClass {
+    public enum ClassType {Parameter, Response, ComplexType, Unknown}
+
+    ;
 
     public String Name;
     public ClassType Type;
@@ -26,8 +26,7 @@ public class SoapClass
     public List<SoapClassProperty> Properties;
 
 
-    public SoapClass(String Name)
-    {
+    public SoapClass(String Name) {
         this.Name = Name;
 
         this.Properties = new ArrayList<SoapClassProperty>();
