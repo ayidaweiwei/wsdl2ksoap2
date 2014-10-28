@@ -1,0 +1,59 @@
+buildscript {
+
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+    }
+
+}
+
+
+allprojects {
+
+    def version = '1.0.' + (project.hasProperty("buildCounter") ? "$buildCounter" : System.currentTimeMillis())
+
+    def globalVersion = new Version(version)
+
+    ext {
+        project.group 'com.github.swapii.wasdl2ksoap'
+        project.version globalVersion.toString()
+        status = globalVersion.status
+    }
+
+    repositories {
+        mavenCentral()
+        maven {
+            url "file://$rootDir/libs"
+        }
+        maven {
+            url "http://ksoap2-android.googlecode.com/svn/m2-repo/"
+        }
+    }
+
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.1'
+}
+
+class Version {
+
+    String thisVersion
+    String status
+
+    Version(String versionValue) {
+        thisVersion = versionValue
+        if (thisVersion.endsWith('-SNAPSHOT')) {
+            status = 'integration'
+        } else {
+            status = 'release'
+        }
+    }
+
+    String toString() {
+        thisVersion
+    }
+
+}
